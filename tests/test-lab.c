@@ -145,6 +145,61 @@ void test_ch_dir_root(void) {
     cmd_free(cmd);
 }
 
+//Changes Added for P2 for Code Review - More tests cases needed
+// New tests
+void test_cmd_parse_multiple_spaces(void) {
+    char **rval = cmd_parse("ls   -a   -l");
+    TEST_ASSERT_TRUE(rval);
+    TEST_ASSERT_EQUAL_STRING("ls", rval[0]);
+    TEST_ASSERT_EQUAL_STRING("-a", rval[1]);
+    TEST_ASSERT_EQUAL_STRING("-l", rval[2]);
+    TEST_ASSERT_EQUAL_STRING(NULL, rval[3]);
+    TEST_ASSERT_FALSE(rval[3]);
+    cmd_free(rval);
+}
+
+void test_cmd_parse_empty_string(void) {
+    char **rval = cmd_parse("");
+    TEST_ASSERT_TRUE(rval);
+    TEST_ASSERT_EQUAL_STRING(NULL, rval[0]);
+    TEST_ASSERT_FALSE(rval[0]);
+    cmd_free(rval);
+}
+
+void test_trim_white_only_whitespace(void) {
+    char *line = (char*)calloc(10, sizeof(char));
+    strncpy(line, "     ", 10);
+    char *rval = trim_white(line);
+    TEST_ASSERT_EQUAL_STRING("", rval);
+    free(line);
+}
+
+void test_trim_white_tabs(void) {
+    char *line = (char*)calloc(10, sizeof(char));
+    strncpy(line, "\tls -a\t", 10);
+    char *rval = trim_white(line);
+    TEST_ASSERT_EQUAL_STRING("ls -a", rval);
+    free(line);
+}
+
+void test_get_prompt_empty_env(void) {
+    unsetenv("MY_PROMPT");
+    char *prompt = get_prompt("MY_PROMPT");
+    TEST_ASSERT_EQUAL_STRING(prompt, "shell>");
+    free(prompt);
+}
+
+void test_ch_dir_invalid_path(void) {
+    char *line = (char*)calloc(10, sizeof(char));
+    strncpy(line, "cd /invalid_path", 10);
+    char **cmd = cmd_parse(line);
+    int result = change_dir(cmd);
+    TEST_ASSERT_EQUAL_INT(-1, result);
+    free(line);
+    cmd_free(cmd);
+}
+
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_cmd_parse);
@@ -159,5 +214,12 @@ int main(void) {
     RUN_TEST(test_get_prompt_custom);
     RUN_TEST(test_ch_dir_home);
     RUN_TEST(test_ch_dir_root);
+    //Changes Added for P2 for Code Review - More tests cases needed
+    RUN_TEST(test_cmd_parse_multiple_spaces);
+    RUN_TEST(test_cmd_parse_empty_string);
+    RUN_TEST(test_trim_white_only_whitespace);
+    RUN_TEST(test_trim_white_tabs);
+    RUN_TEST(test_get_prompt_empty_env);
+    RUN_TEST(test_ch_dir_invalid_path);
     return UNITY_END();
 }

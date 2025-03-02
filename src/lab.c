@@ -32,7 +32,7 @@
  /** Get shell prompt from an environment variable. */
  char *get_prompt(const char *env) {
      char *prompt = getenv(env);
-     return strdup(prompt ? prompt : "shell> ");
+     return strdup(prompt ? prompt : "shell>");
  }
  
  /** Parse a command line into arguments. */
@@ -95,7 +95,6 @@
  /** Handle built-in commands. */
  bool do_builtin(struct shell *sh, char **argv) {
      if (!argv[0]) return false;
- 
      if (strcmp(argv[0], "exit") == 0) {
          sh_destroy(sh);
          exit(0);
